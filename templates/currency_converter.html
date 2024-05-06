@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Make Payment</title>
+    <title>Currency Converter</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
         body, html {
@@ -14,7 +14,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow-x: hidden; /* Prevents horizontal scrolling */
+            overflow-x: hidden;
         }
 
         .top-menu {
@@ -66,17 +66,18 @@
         .nav-button {
             margin: 5px;
         }
+
         .nav-button:hover, .settings:hover {
             background-color: #298D37;
             color: white;
         }
 
-        #make-payment {
-            background-color: #298D37; /* Green background */
-            color: white; /* White text */
+        #currency-converter {
+            background-color: #298D37;
+            color: white;
         }
 
-        #make-payment:hover {
+        #currency-converter:hover {
             background-color: #3CA64E;
         }
 
@@ -87,11 +88,11 @@
 
         .main-content {
             flex-grow: 1;
-            padding: 20px 20px 20px 260px; /* Adjusted left padding to account for sidebar */
-            margin-top: 60px; /* Below the top menu */
+            padding: 20px 20px 20px 260px;
+            margin-top: 60px;
             display: flex;
             flex-direction: column;
-            width: calc(100% - 340px); /* Adjusted width */
+            width: calc(100% - 340px);
         }
 
         header {
@@ -106,28 +107,26 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            
         }
         .form-section {
             background-color: #fff;
             padding: 40px;
             border-radius: 18px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-            width: 90%; /* Increased width */
-            margin-left: auto; /* Center the form section horizontally */
-            margin-right: auto; /* Center the form section horizontally */
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
             margin-bottom: 20px;
         }
 
-        input[type="number"], input[type="text"], textarea, select {
-            width: 100%; /* Full width of the form section */
-            padding: 12px; /* Slightly increased padding for better aesthetics */
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            box-sizing: border-box; /* Ensures padding and border are included in the width */
+            box-sizing: border-box;
         }
 
-        /* General button styling */
         button {
             padding: 10px 20px;
             background-color: #298D37;
@@ -135,16 +134,14 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            width: 100%; /* Make the button full width of the form group */
-            margin-top: 10px; /* Added margin for spacing between form fields and button */
-            font-size: 16px; /* Increased font size for better readability */
+            width: 100%;
+            margin-top: 10px;
+            font-size: 16px;
         }
 
         button:hover {
-            background-color: #3CA64E; /* Slightly lighter green on hover for better user feedback */
+            background-color: #3CA64E;
         }
-
-
 
         .form-group {
             margin-bottom: 15px;
@@ -154,22 +151,28 @@
             display: block;
             margin-bottom: 5px;
         }
+
         .user {
             text-decoration: underline;
             cursor: pointer;
-        
         }
 
-        
-
-        
-        
+        .flash-messages {
+            padding: 20px;
+            margin: 20px 0;
+            background-color: #298D37;
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
     <div class="top-menu">
         <div class="user">charles.leclerc@gmail.com</div>
-        <div class="logout" onclick="window.location.href='/logout'">Log out</div>
+        <div class="logout" onclick="window.location.href='/login'">Log out</div>
     </div>
     <div class="sidebar">
         <button class="nav-button" id="transaction-history" onclick="window.location.href='/transaction_history'">Transaction History</button>
@@ -185,10 +188,9 @@
     </div>
     <div class="main-content">
         <header>
-            <h1>Make Payment</h1>
+            <h1>Currency Converter</h1>
         </header>
         <div class="form-section">
-            <!-- Flash message handling -->
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     <div class="flash-messages">
@@ -198,41 +200,31 @@
                     </div>
                 {% endif %}
             {% endwith %}
-            <form action="{{ url_for('make_payment') }}" method="post">
-                <div class="form-group">
-                    <label for="account_number">Card Number:</label>
-                    <input type="text" id="account_number" name="account_number" placeholder="e.g. 1234 5678 1234 5678" required>
-                </div>
+            <form action="{{ url_for('currency_converter_view') }}" method="post">
                 <div class="form-group">
                     <label for="amount">Amount:</label>
                     <input type="number" id="amount" name="amount" step="0.01" required>
                 </div>
                 <div class="form-group">
-                    <label for="currency">Currency:</label>
-                    <select id="currency" name="currency" required>
+                    <label for="source_currency">Source Currency:</label>
+                    <select id="source_currency" name="source_currency" required>
                         <option value="USD">USD - US Dollar</option>
                         <option value="EUR">EUR - Euro</option>
                         <option value="GBP">GBP - British Pound</option>
-                        <option value="JPY">JPY - Japanese Yen</option>
-                        <option value="AUD">AUD - Australian Dollar</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="description">Description:</label>
-                    <textarea id="description" name="description" rows="3" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="account_select">Select Account:</label>
-                    <select id="account_select" name="account_select" required>
-                        <option value="****5555">**** **** 5555 5555</option>
-                        <option value="****1616">**** **** 1616 1616</option>
-                        <option value="****2525">**** **** 2525 2525</option> 2525</option>
+                    <label for="target_currency">Target Currency:</label>
+                    <select id="target_currency" name="target_currency" required>
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
                     </select>
                 </div>
-                <button type="submit">Make Payment</button>
+                <button type="submit">Convert</button>
             </form>
         </div>
-        
     </div>
 </body>
 </html>
+``

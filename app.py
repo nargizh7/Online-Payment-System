@@ -5,10 +5,19 @@ from mysql.connector import Error
 import bcrypt
 from functools import wraps
 import datetime
-
+from forex_python.converter import CurrencyRates
 
 app = Flask(__name__)
 app.secret_key = 'G3mELYIU45AjG3NhQ6c1Og'
+
+def get_exchange_rate(source_currency, target_currency):
+    c = CurrencyRates()
+    try:
+        rate = c.get_rate(source_currency, target_currency)
+        return rate
+    except Exception as e:
+        print(f"Error fetching exchange rate: {e}")
+        return 1.0  # Default exchange rate in case of failure
 
 def login_required(f):
     @wraps(f)
@@ -89,7 +98,6 @@ class User:
         return None
 
 
-
 class MoneyAccount:
     @staticmethod
     def add_payment_method(name, card_number, expiry_date):
@@ -103,13 +111,13 @@ class MoneyAccount:
                 """
                 cursor.execute(query, (name, card_number, expiry_date))
                 connection.commit()
-                flash("Payment method added successfully")
+                flash("")
                 return True
             else:
                 flash("Failed to connect to the database.")
                 return False
         except Error as e:
-            flash(f"Failed to add payment method: {str(e)}")
+            flash("")
             return False
         finally:
             if cursor:
@@ -140,13 +148,12 @@ class MoneyAccount:
         try:
             cursor.execute("DELETE FROM MoneyAccount WHERE account_id = %s", (account_id,))
             conn.commit()
-            flash('Payment method removed successfully!')
+            flash('')
         except Error as e:
             flash('Error removing payment method: ' + str(e))
         finally:
             cursor.close()
             conn.close()
-
 
 
 class Payment:
@@ -169,7 +176,8 @@ class Payment:
         connection.commit()
         cursor.close()
         connection.close()
-        print("Payment record added successfully")
+        # print("Payment record added successfully")
+
 
 class Inquiry:
     @staticmethod
@@ -182,13 +190,12 @@ class Inquiry:
                 INSERT INTO Inquiry (details, status)
                 VALUES (%s, 'pending')
                 """
-                # Ensure you are passing a tuple to cursor.execute(), even for a single value
                 cursor.execute(query, (details,))  # Notice the comma to create a single-item tuple
                 connection.commit()
-                flash("Inquiry submitted successfully, we will contact you shortly.")
+                flash("")
                 return True
             except Error as e:
-                flash(f"Failed to submit inquiry: {str(e)}")
+                flash("")
                 return False
             finally:
                 if cursor:
@@ -199,6 +206,7 @@ class Inquiry:
             flash("Failed to connect to the database.")
             return False
     
+    @staticmethod
     def get_all_inquiries():
         connection = DBConnection.create_connection()
         if connection:
@@ -234,8 +242,6 @@ class InquiryView(MethodView):
             return render_template('inquiry.html', inquiries=inquiries)
 
 
-
-
 class PaymentMethodForm(MethodView):
     decorators = [login_required]
 
@@ -251,7 +257,6 @@ class PaymentMethodForm(MethodView):
             return redirect(url_for('payment_methods_view'))
         else:
             return render_template('add_payment.html')
-
 
 
 class RegisterView(MethodView):
@@ -279,7 +284,6 @@ class RegisterView(MethodView):
         return render_template('register.html')
 
 
-
 class LoginView(MethodView):
     def get(self):
         return render_template('login.html')
@@ -296,18 +300,20 @@ class LoginView(MethodView):
             flash('Email or password is not correct.')
         return render_template('login.html')
 
-   
+
 class WelcomePage(MethodView):
     @login_required
     def get(self):
         # Here you can add any logic to fetch transaction data if needed
         return render_template('index.html')
-    
+
+
 class PaymentMethodsView(MethodView):
     @login_required
     def get(self):
         payment_methods = MoneyAccount.view_payment_methods()
         return render_template('view_accounts.html', payment_methods=payment_methods)
+
 
 class DeletePaymentMethodView(MethodView):
     @login_required
@@ -347,6 +353,7 @@ class TransactionHistory(MethodView):
         conn.close()
         return transactions, balance
 
+
 class Subscription:
     def __init__(self, userID, service, paymentFrequency, active=True):
         self.userID = userID
@@ -354,11 +361,11 @@ class Subscription:
         self.paymentFrequency = paymentFrequency
         self.active = active
 
-    def activateSubscription(self):
+    def activate_subscription(self):
         self.active = True
         return self.update_active_status(True)
 
-    def cancelSubscription(self):
+    def cancel_subscription(self):
         self.active = False
         return self.update_active_status(False)
 
@@ -379,14 +386,13 @@ class Subscription:
         conn = DBConnection.create_connection()
         cursor = conn.cursor()
 
-        # Get the current date and calculate renews_at based on paymentFrequency
         now = datetime.datetime.now()
         if paymentFrequency == 'Monthly':
-            renews_at = now + datetime.timedelta(days=30)  # Approximately one month
+            renews_at = now + datetime.timedelta(days=30)
         elif paymentFrequency == 'Quarterly':
-            renews_at = now + datetime.timedelta(days=120)  # Approximately four months
-        else:  # Assuming 'Yearly'
-            renews_at = now + datetime.timedelta(days=365)  # Approximately one year
+            renews_at = now + datetime.timedelta(days=120)
+        else:
+            renews_at = now + datetime.timedelta(days=365)
 
         query = """
         INSERT INTO Subscription (userID, service, paymentFrequency, active, renews_at)
@@ -397,7 +403,6 @@ class Subscription:
         cursor.close()
         conn.close()
 
-    
     @staticmethod
     def get_subscriptions_by_user(userID):
         conn = DBConnection.create_connection()
@@ -413,6 +418,8 @@ class Subscription:
         cursor.close()
         conn.close()
         return subscriptions
+
+    @staticmethod
     def delete_subscription(subscription_id):
         conn = DBConnection.create_connection()
         if conn:
@@ -428,13 +435,13 @@ class Subscription:
                 conn.close()
 
 
-
 class SubscriptionsView(MethodView):
     @login_required
     def get(self):
         user_id = session['user_id']
         subscriptions = Subscription.get_subscriptions_by_user(user_id)
         return render_template('subscriptions.html', subscriptions=subscriptions)
+
 
 class AddSubscriptionView(MethodView):
     @login_required
@@ -448,41 +455,44 @@ class AddSubscriptionView(MethodView):
 
         try:
             Subscription.create_subscription(user_id, service, payment_frequency)
-            flash('Subscription added successfully!')
+            flash('')
         except Exception as e:
             flash(f'Error in adding subscription: {str(e)}')
 
         return redirect(url_for('subscriptions'))
 
+
 class CancelSubscriptionView(MethodView):
     @login_required
     def post(self, subscription_id):
         user_id = session['user_id']
-        subscription = Subscription(userID=user_id, service="", paymentFrequency="")  # Initializing with placeholders
+        subscription = Subscription(userID=user_id, service="", paymentFrequency="")
         subscription.update_active_status(subscription_id, False)
-        flash('Subscription canceled successfully!')
+        flash('')
         return redirect(url_for('subscriptions'))
+
 
 class ActivateSubscriptionView(MethodView):
     @login_required
     def post(self, subscription_id):
         user_id = session['user_id']
-        subscription = Subscription(userID=user_id, service="", paymentFrequency="")  # Initializing with placeholders
+        subscription = Subscription(userID=user_id, service="", paymentFrequency="")
         subscription.update_active_status(subscription_id, True)
-        flash('Subscription activated successfully!')
+        flash('')
         return redirect(url_for('subscriptions'))
 
+
 class DeleteSubscriptionView(MethodView):
-    decorators = [login_required]  # Ensure the user is logged in
+    decorators = [login_required]
 
     def post(self, subscription_id):
         try:
             if Subscription.delete_subscription(subscription_id):
-                flash('Subscription successfully deleted.', 'success')
+                flash('')
             else:
-                flash('Failed to delete subscription.', 'error')
+                flash('')
         except Exception as e:
-            flash(f'Error during deletion: {str(e)}', 'error')
+            flash('')
         
         return redirect(url_for('subscriptions'))
 
@@ -505,24 +515,20 @@ class MakePaymentView(MethodView):
         amount = float(request.form['amount'])
         description = request.form['description']
 
-        # Ensure the amount is positive
         if amount <= 0:
             flash('Amount must be greater than zero.')
             return redirect(url_for('make_payment'))
 
-        # Check if the user has sufficient balance
         balance = self.get_balance_by_user(user_id)
         if balance < amount:
             flash('Insufficient balance to complete the transaction.')
             return redirect(url_for('make_payment'))
 
-        # Create a transaction for the payment
         try:
             self.create_payment_transaction(user_id, account_number, amount, description)
-            flash('Payment successful!')
+            flash('')
         except Exception as e:
             flash(f'Error in processing payment: {str(e)}')
-
 
         return redirect(url_for('transaction_history'))
 
@@ -553,9 +559,41 @@ class MakePaymentView(MethodView):
         conn.close()
 
 
+class CurrencyConverter:
+    def __init__(self, converterID, sourceCurrency, targetCurrency, exchangeRate=0.0):
+        self.converterID = converterID
+        self.sourceCurrency = sourceCurrency
+        self.targetCurrency = targetCurrency
+        self.exchangeRate = exchangeRate
+
+    def convert(self, amount):
+        return amount * self.exchangeRate
+
+    def updateExchangeRate(self, newRate):
+        self.exchangeRate = newRate
+
+
+class CurrencyConverterView(MethodView):
+    decorators = [login_required]
+
+    def get(self):
+        return render_template('currency_converter.html')
+
+    def post(self):
+        amount = float(request.form.get('amount', 0))
+        source_currency = request.form.get('source_currency', 'USD')
+        target_currency = request.form.get('target_currency', 'EUR')
+
+        converter = CurrencyConverter(converterID=1, sourceCurrency=source_currency, targetCurrency=target_currency)
+        converter.updateExchangeRate(get_exchange_rate(source_currency, target_currency))
+        converted_amount = converter.convert(amount)
+        
+        flash(f"{amount} {source_currency} is equivalent to {converted_amount:.2f} {target_currency}")
+        return redirect(url_for('currency_converter_view'))
 
 
 
+app.add_url_rule('/currency_converter', view_func=CurrencyConverterView.as_view('currency_converter_view'), methods=['GET', 'POST'])
 app.add_url_rule('/', view_func=WelcomePage.as_view('welcome'))
 app.add_url_rule('/inquiry', view_func=InquiryView.as_view('inquiry'))
 app.add_url_rule('/register', view_func=RegisterView.as_view('register'))
@@ -570,7 +608,6 @@ app.add_url_rule('/add_subscription', view_func=AddSubscriptionView.as_view('add
 app.add_url_rule('/cancel_subscription/<int:subscription_id>', view_func=CancelSubscriptionView.as_view('cancel_subscription'), methods=['POST'])
 app.add_url_rule('/activate_subscription/<int:subscription_id>', view_func=ActivateSubscriptionView.as_view('activate_subscription'), methods=['POST'])
 app.add_url_rule('/delete_subscription/<int:subscription_id>', view_func=DeleteSubscriptionView.as_view('delete_subscription'), methods=['POST'])
-
 
 
 if __name__ == '__main__':

@@ -1,8 +1,9 @@
+<!-- templates/payment_options.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Subscriptions</title>
+    <title>Payment Options</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
         body, html {
@@ -31,7 +32,7 @@
             z-index: 1000;
         }
         .logout {
-            margin-right: 10px;
+            margin-right: 5px;
             text-decoration: underline;
             cursor: pointer;
         }
@@ -63,20 +64,12 @@
             align-items: center;
         }
 
-        .nav-button {
-            margin: 5px;
-        }
-        .nav-button:hover, .settings:hover {
-            background-color: #298D37;
-            color: white;
-        }
-
-        #subscriptions {
+        #make-payment {
             background-color: #298D37; /* Green background */
             color: white; /* White text */
         }
 
-        #subscriptions:hover {
+        #make-payment:hover {
             background-color: #3CA64E;
         }
 
@@ -87,16 +80,11 @@
 
         .main-content {
             flex-grow: 1;
-            padding: 20px 20px 20px 260px; /* Adjusted left padding to account for sidebar */
+            padding: 20px 20px 20px 220px; /* Adjust left padding to account for sidebar */
             margin-top: 60px; /* Below the top menu */
             display: flex;
             flex-direction: column;
-            width: calc(100% - 340px); /* Adjusted width */
-            
-        }
-
-        table {
-            background-color: #ffffff;
+            width: calc(100% - 220px); /* Adjusted width */
         }
 
         header {
@@ -112,57 +100,42 @@
             align-items: flex-start;
         }
 
-        table {
+        form {
             width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
         }
 
-        th, td {
+        label, select, input, button {
+            margin-bottom: 10px;
             padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
+            border-radius: 3px;
         }
 
-        th {
-            background-color: #298D37;
-            color: #fff;
-        }
-        .user {
-            text-decoration: underline;
-            cursor: pointer;
-        
+        label {
+            font-weight: bold;
         }
 
-        .active-true {
-            color: green;
-        }
-
-        .active-false {
-            color: red;
+        select, input[type="text"], input[type="number"], input[type="password"] {
+            border: 1px solid #ccc;
+            width: 100%;
         }
 
         button {
-            padding: 5px 10px;
             background-color: #298D37;
             color: white;
             border: none;
-            border-radius: 3px;
             cursor: pointer;
         }
 
         button:hover {
             background-color: #3CA64E;
         }
-
-        form {
-            display: inline-block;
-        }
     </style>
 </head>
 <body>
     <div class="top-menu">
-        <div class="user">charles.leclerc@gmail.com</div>
+        <div class="time" id="time"></div>
         <div class="logout" onclick="window.location.href='/logout'">Log out</div>
     </div>
     <div class="sidebar">
@@ -173,62 +146,34 @@
         <button class="nav-button" id="add-subscription" onclick="window.location.href='/add_subscription'">Add Subscription</button>
         <button class="nav-button" onclick="window.location.href='/add_payment'">Add Payment Method</button>
         <button class="nav-button" id="currency-converter" onclick="window.location.href='/currency_converter'">Currency Converter</button>
-<div class="settings">
+        <div class="settings">
             <span class="material-icons">Settings</span>
         </div>
     </div>
     <div class="main-content">
         <header>
-            <h1>Subscriptions</h1>
+            <h1>Payment Options</h1>
         </header>
         <div class="content">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Subscription ID</th>
-                        <th>Service</th>
-                        <th>Payment Frequency</th>
-                        <th>Renews on</th>
-                        <th>Active</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if subscriptions %}
-                        {% for subscription in subscriptions %}
-                        <tr>
-                            <td>{{ subscription[0] }}</td>
-                            <td>{{ subscription[1] }}</td>
-                            <td>{{ subscription[2] }}</td>
-                            <td>{{ subscription[4] }}</td> <!-- Display renews_at value -->
-                            <td class="{{ 'active-true' if subscription[3] else 'active-false' }}">
-                                {{ 'Active' if subscription[3] else 'Inactive' }}
-                            </td>
-                            <td>
-                                {% if subscription[3] %}
-                                    <form action="{{ url_for('cancel_subscription', subscription_id=subscription[0]) }}" method="post">
-                                        <button type="submit">Cancel</button>
-                                    </form>
-                                {% else %}
-                                    <form action="{{ url_for('activate_subscription', subscription_id=subscription[0]) }}" method="post">
-                                        <button type="submit">Activate</button>
-                                    </form>
-                                {% endif %}
-                                <!-- Add delete button form -->
-                                <form action="{{ url_for('delete_subscription', subscription_id=subscription[0]) }}" method="post">
-                                    <button type="submit" class="delete-button">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    {% else %}
-                        <tr>
-                            <td colspan="6">No subscriptions found.</td>
-                        </tr>
-                    {% endif %}
-                </tbody>
-                
-            </table>
+            <form action="{{ url_for('payment_options') }}" method="post">
+                <label for="payment_type">Payment Type:</label>
+                <select name="payment_type" id="payment_type" required>
+                    <option value="electricity">Electricity</option>
+                    <option value="water">Water</option>
+                    <option value="phone_balance">Phone Balance</option>
+                </select>
+
+                <label for="number">Number:</label>
+                <input type="text" name="number" id="number" required>
+
+                <label for="amount">Amount:</label>
+                <input type="number" name="amount" id="amount" required min="1" step="any">
+
+                <label for="description">Description:</label>
+                <input type="text" name="description" id="description">
+
+                <button type="submit">Proceed to Payment</button>
+            </form>
         </div>
     </div>
 </body>
