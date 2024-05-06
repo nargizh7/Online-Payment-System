@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #E8ECEE;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+    }
+
+    .top-menu {
+        background-color: #ffffff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        font-size: 16px;
+        width: 98%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    .sidebar {
+        padding: 20px;
+        width: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        background-color: transparent;
+        position: fixed;
+        top: 60px;
+        bottom: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+    
+    }
+
+    .nav-button, .settings {
+        background: none;
+        border: none;
+        color: #333;
+        padding: 10px;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+
+
+    }
+    .flash-messages div {
+        padding: 10px;
+        background-color: #d6f8de;
+        color: #0a6910;
+        border-color: #82cf94;
+        margin-left: 60px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        width: 1050px;
+        text-align: center;
+    }
+    .logout {
+        margin-right: 10px;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .user {
+        text-decoration: underline;
+        cursor: pointer;
+        
+    }
+
+    #add-payment, .nav-button:hover, .settings:hover {
+        background-color: #298D37;
+        color: white;
+    }
+
+    .settings {
+        margin-top: auto;
+        font-size: 16px;
+    }
+    .form-section h2 {
+        font-size: 30px; /* Change the font size to your desired value */
+        
+    }
+
+    .inquiry-list table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+}
+
+.inquiry-list th,
+.inquiry-list td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.inquiry-list th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.inquiry-list .inquiry-status {
+    color: #2c662d;
+    font-style: italic;
+    
+}
+
+
+
+    .main-content {
+        flex-grow: 1;
+        padding: 20px 20px 20px 220px; /* Adjust left padding to account for sidebar */
+        margin-top: 60px; /* Below the top menu */
+        display: flex;
+        flex-direction: column;
+        width: calc(100% - 220px); /* Adjusted width */
+    }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px; /* Add margin to separate recent inquiries */
+}
+
+.form-section {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 18px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    width: 90%; /* Make description section wider */
+    margin-left: auto; /* Center description section */
+    margin-right: auto; /* Center description section */
+    margin-bottom: 20px; /* Add margin to separate recent inquiries */
+}
+
+.inquiry-list {
+    width: 90%; /* Make recent inquiries list wider */
+    margin-left: auto; /* Center recent inquiries list */
+    margin-right: auto; /* Center recent inquiries list */
+}
+
+
+    .card-image {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+        margin-bottom: 20px;
+        margin-left: 60px; /* Ensure it starts at the leftmost part of the content area */
+    }
+
+    .form-section {
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 18px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        width: 80%;
+        margin-left: 60px; /* Match the margin with the card image */
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        width: 100%;
+        text-align: left;
+    }
+
+    .form-group.half-width {
+        display: inline-block;
+        width: 48%;
+        margin-right: 4%;
+    }
+
+    .form-group.half-width:last-child {
+        margin-right: 0;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+        text-align: left;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .submit-btn {
+        width: 100%;  /* Change to full width */
+        padding: 10px;
+        background-color: #298D37;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        display: block; /* Ensures it behaves as a block-level element */
+        margin-top: 20px; /* Extra space from the last input */
+    }
+
+    form-section {
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 18px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        width: calc(100% - 280px); /* Adjusted width to account for sidebar */
+        margin-left: 260px; /* Adjusted left margin to accommodate the sidebar */
+        margin-top: 60px; /* Add margin to account for the top menu */
+        margin-bottom: 20px;
+        
+    }
+
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        resize: vertical; /* Allow vertical resizing */
+        min-height: 150px; /* Set minimum height */
+        
+
+    }
+    #inquiry {
+        background-color: #298D37; /* Green background */
+        color: white; /* White text */
+    }
+
+    #inquiry:hover {
+        background-color: #3CA64E;
+    }
+
+    
+
+    
+
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment System</title>
+    
+</head>
+<body>
+    <div class="top-menu">
+        <div class="user">charles.leclerc@gmail.com</div>
+        <div class="logout" onclick="window.location.href='/login'">Log out</div>
+    </div>
+    <div class="sidebar">
+        <button class="nav-button" id="transaction-history" onclick="window.location.href='/transaction_history'">Transaction History</button>
+        <button class="nav-button" id="make-payment" onclick="window.location.href='/make_payment'">Make Payment</button>
+        <button class="nav-button" id = "view" onclick="window.location.href='/view_accounts'">View Accounts</button>
+        <button class="nav-button" id="subscriptions" onclick="window.location.href='/subscriptions'">Subscriptions</button>
+        <button class="nav-button" onclick="window.location.href='/add_payment'">Add Payment Method</button>
+        <button class="nav-button" id="add-subscription" onclick="window.location.href='/add_subscription'">Add Subscription</button>
+        <button class="nav-button" id="inquiry" onclick="window.location.href='/inquiry'">Create Inquiry</button>
+        <div class="settings">
+            <span class="material-icons">Settings</span>
+        </div>
+    </div>
+    <div class="main-content">
+        <header>
+            <!-- Optional header content can go here -->
+        </header>
+        <div class="content">
+            <div class="form-section">
+                <h2>Please address your problem in the field below, our staff will contact you back shortly</h2>
+                <form id="inquiryForm" action="/inquiry" method="post">
+                    <div class="form-group">
+                        <textarea id="message" name="message" placeholder="Type your message here" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="submit-btn">Submit Inquiry</button>
+                    </div>
+                </form>
+            </div>
+            <!-- Updated Section for displaying inquiries -->
+            <div class="inquiry-list">
+                <h2>Recent Inquiries</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Inquiry Details</th>
+                            <th>Created At</th> <!-- Changed the order to Details, Created At, Status -->
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inquiry in inquiries %}
+                        <tr>
+                            <td>{{ inquiry[0] }}</td>
+                            <td>{{ inquiry[2] }}</td> <!-- Displaying the Created At value -->
+                            <td><span class="inquiry-status">{{ inquiry[1] }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        
+        
+        
+    </div>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #E8ECEE;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow-x: hidden; /* Prevents horizontal scrolling */
+        }
+
+        .top-menu {
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            font-size: 16px;
+            width: 98%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .logout {
+            margin-right: 10px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .sidebar {
+            padding: 20px;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background-color: transparent;
+            position: fixed;
+            top: 60px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+        table {
+            margin-right: 20px;
+            margin-bottom: 20px;
+            background-color: #fff; /* Add this line to set white background */
+        }
+        
+
+
+        .nav-button, .settings {
+            background: none;
+            border: none;
+            color: #333;
+            padding: 10px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        #transaction-history {
+            background-color: #298D37; /* Green background */
+            color: white; /* White text */
+        }
+
+        #transaction-history:hover {
+        background-color: #3CA64E;
+        }
+
+        .settings {
+            margin-top: auto;
+            font-size: 16px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px 20px 20px 220px; /* Adjust left padding to account for sidebar */
+            margin-top: 60px; /* Below the top menu */
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - 220px); /* Adjusted width */
+        }
+
+        .nav-button {
+            margin: 5px;
+        }
+        .nav-button:hover, .settings:hover {
+            background-color: #298D37;
+            color: white;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        
+        }
+        .flash-messages div {
+            padding: 10px;
+            background-color: #d6f8de;
+            color: #0a6910;
+            border-color: #82cf94;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            width: 1050px;
+            text-align: center;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 20px 20px 20px 260px; /* Adjusted left padding to account for sidebar */
+            margin-top: 60px; /* Below the top menu */
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - 340px); /* Adjusted width */
+        }
+
+        .user {
+            text-decoration: underline;
+            cursor: pointer;
+        
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #298D37;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-menu">
+        <div class="user">charles.leclerc@gmail.com</div>
+        <div class="logout" onclick="window.location.href='/login'">Log out</div>
+    </div>
+    <div class="sidebar">
+        
+        <button class="nav-button" id="transaction-history" onclick="window.location.href='/transaction_history'">Transaction History</button>
+        <button class="nav-button" id="make-payment" onclick="window.location.href='/make_payment'">Make Payment</button>
+        <button class="nav-button" id = "view" onclick="window.location.href='/view_accounts'">View Accounts</button>
+        <button class="nav-button" id="subscriptions" onclick="window.location.href='/subscriptions'">Subscriptions</button>
+        <button class="nav-button" onclick="window.location.href='/add_payment'">Add Payment Method</button>
+        <button class="nav-button" id="add-subscription" onclick="window.location.href='/add_subscription'">Add Subscription</button>
+        <button class="nav-button" id="inquiry" onclick="window.location.href='/inquiry'">Create Inquiry</button>
+
+        <div class="settings">
+            <span class="material-icons">Settings</span>
+        </div>
+    </div>
+    <div class="main-content">
+        <header>
+            <h1>Transaction History</h1>
+        </header>
+        <div class="content">
+             <!-- Flash message handling -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for message in messages %}
+                            <div>{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <h2>Current Balance: ${{ "{:.2f}".format(balance) }}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Transaction Details</th>
+                        <th>Amount</th>
+                        <th>Creation Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if transactions %}
+                        {% for transaction in transactions %}
+                            <tr>
+                                <td>{{ transaction[0] }}</td>
+                                <td>{{ transaction[1] }}</td>
+                                <td>${{ "{:.2f}".format(transaction[2]) }}</td>
+                                <td>{{ transaction[3] }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4">No transactions found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

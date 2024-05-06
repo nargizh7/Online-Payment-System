@@ -1,0 +1,172 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #E8ECEE;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+}
+
+.top-menu {
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 16px;
+    width: 98%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.sidebar {
+    padding: 20px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: transparent;
+    position: fixed;
+    top: 60px;
+    bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+   
+}
+
+.nav-button, .settings {
+    background: none;
+    border: none;
+    color: #333;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+
+
+}
+.flash-messages div {
+    padding: 10px;
+    background-color: #d6f8de;
+    color: #0a6910;
+    border-color: #82cf94;
+    margin-left: 60px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    width: 1050px;
+    text-align: center;
+}
+.logout {
+    margin-right: 5px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.user {
+    margin-right: 5px;
+    text-decoration: underline;
+    position: initial;
+}
+
+#add-payment, .nav-button:hover, .settings:hover {
+    background-color: #298D37;
+    color: white;
+}
+
+.settings {
+    margin-top: auto;
+    font-size: 16px;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px 20px 20px 220px; /* Adjust left padding to account for sidebar */
+    margin-top: 60px; /* Below the top menu */
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 220px); /* Adjusted width */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.card-image {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    margin-bottom: 20px;
+    margin-left: 60px; /* Ensure it starts at the leftmost part of the content area */
+}
+
+.form-section {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 18px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    width: 80%;
+    margin-left: 60px; /* Match the margin with the card image */
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: left;
+}
+
+.form-group.half-width {
+    display: inline-block;
+    width: 48%;
+    margin-right: 4%;
+}
+
+.form-group.half-width:last-child {
+    margin-right: 0;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #666;
+    text-align: left;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+}
+
+.submit-btn {
+    width: 100%;  /* Change to full width */
+    padding: 10px;
+    background-color: #298D37;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    display: block; /* Ensures it behaves as a block-level element */
+    margin-top: 20px; /* Extra space from the last input */
+}

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #E8ECEE;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+    }
+
+    .top-menu {
+        background-color: #ffffff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        font-size: 16px;
+        width: 98%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    .sidebar {
+        padding: 20px;
+        width: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        background-color: transparent;
+        position: fixed;
+        top: 60px;
+        bottom: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+    
+    }
+
+    .nav-button, .settings {
+        background: none;
+        border: none;
+        color: #333;
+        padding: 10px;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+
+
+    }
+    .flash-messages div {
+        padding: 10px;
+        background-color: #d6f8de;
+        color: #0a6910;
+        border-color: #82cf94;
+        margin-left: 60px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        width: 1050px;
+        text-align: center;
+    }
+    .logout {
+        margin-right: 10px;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .user {
+        text-decoration: underline;
+        cursor: pointer;
+        
+    }
+
+    #add-payment, .nav-button:hover, .settings:hover {
+        background-color: #298D37;
+        color: white;
+    }
+
+    .settings {
+        margin-top: auto;
+        font-size: 16px;
+    }
+
+    .main-content {
+            flex-grow: 1;
+            padding: 20px 20px 20px 260px; /* Adjusted left padding to account for sidebar */
+            margin-top: 60px; /* Below the top menu */
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - 340px); /* Adjusted width */
+            
+        }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .card-image {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+        margin-bottom: 20px;
+        margin-left: 60px; /* Ensure it starts at the leftmost part of the content area */
+    }
+
+    .form-section {
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 18px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        width: 80%;
+        margin-left: 60px; /* Match the margin with the card image */
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        width: 100%;
+        text-align: left;
+    }
+
+    .form-group.half-width {
+        display: inline-block;
+        width: 48%;
+        margin-right: 4%;
+    }
+
+    .form-group.half-width:last-child {
+        margin-right: 0;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+        text-align: left;
+    }
+    #add-payment {
+        background-color: #298D37; /* Green background */
+        color: white; /* White text */
+    }
+
+    #add-payment:hover {
+        background-color: #3CA64E;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .submit-btn {
+        width: 100%;  /* Change to full width */
+        padding: 10px;
+        background-color: #298D37;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        display: block; /* Ensures it behaves as a block-level element */
+        margin-top: 20px; /* Extra space from the last input */
+    }
+
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment System</title>
+    
+</head>
+<body>
+    <div class="top-menu">
+        <div class="user">charles.leclerc@gmail.com</div>
+        <div class="logout" onclick="window.location.href='/login'">Log out</div>
+    </div>
+    <div class="sidebar">
+        <button class="nav-button" id="transaction-history" onclick="window.location.href='/transaction_history'">Transaction History</button>
+        <button class="nav-button" id="make-payment" onclick="window.location.href='/make_payment'">Make Payment</button>
+        <button class="nav-button" id = "view" onclick="window.location.href='/view_accounts'">View Accounts</button>
+        <button class="nav-button" id="subscriptions" onclick="window.location.href='/subscriptions'">Subscriptions</button>
+        <button class="nav-button" id = "add-payment" onclick="window.location.href='/add_payment'">Add Payment Method</button>
+        <button class="nav-button" id="add-subscription" onclick="window.location.href='/add_subscription'">Add Subscription</button>
+        <button class="nav-button" id="inquiry" onclick="window.location.href='/inquiry'">Create Inquiry</button>
+
+        <div class="settings">
+            <span class="material-icons">Settings</span>
+        </div>
+    </div>
+    <div class="main-content">
+        <header>
+            <!-- Optional header content can go here -->
+        </header>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div>{{ message }}</div>
+                    {% endfor %}
+                 </div>
+            {% endif %}
+        {% endwith %}
+        <div class="content">
+            <img src="{{ url_for('static', filename='images/card.png') }}" alt="Example Image" class="card-image">
+            <div class="form-section">
+                <h2>Add Payment Method</h2>
+                <form id="paymentForm" action="/add_payment" method="post">
+                    <div class="form-group">
+                        <label for="name">Name on the card</label>
+                        <input type="text" id="name" name="name" placeholder="e.g. Nuray Gurbanova" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number</label>
+                        <input type="text" id="cardNumber" name="cardNumber" placeholder="e.g. 1234 5678 1234 5678" required>
+                    </div>
+                    <div class="form-group half-width">
+                        <label for="expiry">Valid Until</label>
+                        <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required>
+                    </div>
+                    <div class="form-group half-width">
+                        <label for="cvv">CVV</label>
+                        <input type="text" id="cvv" name="cvv" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="submit-btn">Add now</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .top-menu {
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            height: 50px;
+        }
+
+        .logout {
+            cursor: pointer;
+            color: #298D37;
+            font-weight: bold;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #fff;
+            padding: 60px 20px 20px 20px;
+            height: calc(100vh - 50px);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 50px;
+            left: 0;
+        }
+
+        .nav-button {
+            background: none;
+            border: none;
+            color: #298D37;
+            padding: 10px;
+            text-align: left;
+            width: 100%;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .nav-button:hover {
+            background-color: #f4f4f4;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 200px;
+            padding-top: 60px;
+            padding-left: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 0;
+            color: #298D37;
+        }
+
+        .welcome {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .actions {
+            margin-top: 20px;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px 0;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-menu">
+        <div>Welcome back, Charles!</div>
+        <div class="logout" onclick="window.location.href='/logout'">Log out</div>
+    </div>
+    <div class="sidebar">
+        <button class="nav-button" onclick="window.location.href='/initiate_payment'">Initiate Payment</button>
+        <button class="nav-button" onclick="window.location.href='/transaction_history'">View Transaction History</button>
+        <button class="nav-button" onclick="window.location.href='/create_inquiry'">Create Inquiry</button>
+        <button class="nav-button" onclick="window.location.href='/view_accounts'">View Payment Accounts</button>
+    </div>
+    <div class="main-content">
+        <h1>User Dashboard</h1>
+        <div class="welcome">Welcome back, Charles!</div>
+        <div class="actions">
+            <a href="/initiate_payment" class="button">Initiate Payment</a>
+            <a href="/transaction_history" class="button">View Transaction History</a>
+            <a href="/create_inquiry" class="button">Create Inquiry</a>
+            <a href="/view_accounts" class="button">View Payment Accounts</a>
+        </div>
+    </div>
+</body>
+</html>

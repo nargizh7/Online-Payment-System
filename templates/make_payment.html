@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Make Payment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #E8ECEE;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow-x: hidden; /* Prevents horizontal scrolling */
+        }
+
+        .top-menu {
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            font-size: 16px;
+            width: 98%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .logout {
+            margin-right: 10px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .sidebar {
+            padding: 20px;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background-color: transparent;
+            position: fixed;
+            top: 60px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .nav-button, .settings {
+            background: none;
+            border: none;
+            color: #333;
+            padding: 10px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-button {
+            margin: 5px;
+        }
+        .nav-button:hover, .settings:hover {
+            background-color: #298D37;
+            color: white;
+        }
+
+        #make-payment {
+            background-color: #298D37; /* Green background */
+            color: white; /* White text */
+        }
+
+        #make-payment:hover {
+            background-color: #3CA64E;
+        }
+
+        .settings {
+            margin-top: auto;
+            font-size: 16px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px 20px 20px 260px; /* Adjusted left padding to account for sidebar */
+            margin-top: 60px; /* Below the top menu */
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - 340px); /* Adjusted width */
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            margin-left: 20px;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            
+        }
+        .form-section {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 18px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            width: 90%; /* Increased width */
+            margin-left: auto; /* Center the form section horizontally */
+            margin-right: auto; /* Center the form section horizontally */
+            margin-bottom: 20px;
+        }
+
+        input[type="number"], input[type="text"], textarea, select {
+            width: 100%; /* Full width of the form section */
+            padding: 12px; /* Slightly increased padding for better aesthetics */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Ensures padding and border are included in the width */
+        }
+
+        /* General button styling */
+        button {
+            padding: 10px 20px;
+            background-color: #298D37;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%; /* Make the button full width of the form group */
+            margin-top: 10px; /* Added margin for spacing between form fields and button */
+            font-size: 16px; /* Increased font size for better readability */
+        }
+
+        button:hover {
+            background-color: #3CA64E; /* Slightly lighter green on hover for better user feedback */
+        }
+
+
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .user {
+            text-decoration: underline;
+            cursor: pointer;
+        
+        }
+
+        
+
+        
+        
+    </style>
+</head>
+<body>
+    <div class="top-menu">
+        <div class="user">charles.leclerc@gmail.com</div>
+        <div class="logout" onclick="window.location.href='/logout'">Log out</div>
+    </div>
+    <div class="sidebar">
+        <button class="nav-button" id="transaction-history" onclick="window.location.href='/transaction_history'">Transaction History</button>
+        <button class="nav-button" id="make-payment" onclick="window.location.href='/make_payment'">Make Payment</button>
+        <button class="nav-button" id = "view" onclick="window.location.href='/view_accounts'">View Accounts</button>
+        <button class="nav-button" id="subscriptions" onclick="window.location.href='/subscriptions'">Subscriptions</button>
+        <button class="nav-button" onclick="window.location.href='/add_payment'">Add Payment Method</button>
+        <button class="nav-button" id="add-subscription" onclick="window.location.href='/add_subscription'">Add Subscription</button>
+        <div class="settings">
+            <span class="material-icons">Settings</span>
+        </div>
+    </div>
+    <div class="main-content">
+        <header>
+            <h1>Make Payment</h1>
+        </header>
+        <div class="form-section">
+            <!-- Flash message handling -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for message in messages %}
+                            <div>{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <form action="{{ url_for('make_payment') }}" method="post">
+                <div class="form-group">
+                    <label for="account_number">Card Number:</label>
+                    <input type="text" id="account_number" name="account_number" placeholder="e.g. 1234 5678 1234 5678" required>
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount:</label>
+                    <input type="number" id="amount" name="amount" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="currency">Currency:</label>
+                    <select id="currency" name="currency" required>
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="JPY">JPY - Japanese Yen</option>
+                        <option value="AUD">AUD - Australian Dollar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="account_select">Select Account:</label>
+                    <select id="account_select" name="account_select" required>
+                        <option value="****5555">**** **** 5555 5555</option>
+                        <option value="****1616">**** **** 1616 1616</option>
+                        <option value="****2525">**** **** 2525 2525</option> 2525</option>
+                    </select>
+                </div>
+                <button type="submit">Make Payment</button>
+            </form>
+        </div>
+        
+    </div>
+</body>
+</html>

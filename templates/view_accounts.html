@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Payment Methods</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #E8ECEE;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .top-menu {
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            font-size: 16px;
+            width: 98%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .sidebar {
+            padding: 20px;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background-color: transparent;
+            position: fixed;
+            top: 60px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .nav-button, .settings {
+            background: none;
+            border: none;
+            color: #333;
+            padding: 10px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .nav-button {
+            margin: 5px;
+        }
+        .nav-button:hover, .settings:hover {
+            background-color: #298D37;
+            color: white;
+        }
+
+        #view_accounts {
+            background-color: #298D37; /* Green background */
+            color: white; /* White text */
+        }
+
+        .settings {
+            margin-top: auto;
+            font-size: 16px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px 20px 20px 220px;
+            margin-top: 60px;
+            display: flex;
+            flex-direction: column;
+            width: 1000px;
+            margin-left: 50px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .user {
+            text-decoration: underline;
+            cursor: pointer;
+        
+        }
+        .logout {
+            margin-right: 10px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .remove-btn {
+            padding: 8px 16px;
+            background-color: #ffcccc; /* Light red background */
+            border: 1px solid #ffaaaa; /* Slightly darker red for border */
+            color: #4c0404; /* Dark text for better readability */
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: auto; /* Pushes the button to the right */
+            display: block; /* Makes sure the button can apply margin-left auto */
+            text-align: center;
+        }
+
+        .remove-btn:hover {
+            background-color: #ffaaaa; /* Slightly darker red on hover */
+        }
+
+        #view {
+            background-color: #298D37; /* Green background */
+            color: white; /* White text */
+        }
+
+        #view:hover {
+            background-color: #3CA64E;
+        }
+
+        .payment-list {
+            list-style-type: none;
+            padding: 0;
+            width: 100%;
+        }
+        
+        .flash-messages div {
+            padding: 10px;
+            background-color: #d6f8de;
+            color: #0a6910;
+            border-color: #82cf94;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            width: 1050px;
+            text-align: center;
+        }
+
+        .payment-icon {
+            width: 80px; /* Fixed width for the image */
+            height: auto; /* Maintain aspect ratio */
+            margin-right: 20px; /* Space between image and text */
+        }
+        .payment-list li {
+            display: flex;
+            align-items: center; /* Aligns items vertically in the center */
+            background-color: #fff;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 18px;
+        }
+
+        .payment-details {
+            flex-grow: 1; /* Takes up remaining space */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .label {
+            color: #11661c; /* Green color for labels */
+            font-weight: bold; /* Optional: makes the label bold */
+        }
+
+        .value {
+            color: #333; /* Black color for values */
+        }
+    </style>
+</head>
+<body>
+    <div class="top-menu">
+        <div class="user">charles.leclerc@gmail.com</div>
+        <div class="logout" onclick="window.location.href='/login'">Log out</div>
+    </div>
+    <div class="sidebar">
+        <button class="nav-button" id="transaction-history" onclick="window.location.href='/transaction_history'">Transaction History</button>
+        <button class="nav-button" id="make-payment" onclick="window.location.href='/make_payment'">Make Payment</button>
+        <button class="nav-button" id = "view" onclick="window.location.href='/view_accounts'">View Accounts</button>
+        <button class="nav-button" id="subscriptions" onclick="window.location.href='/subscriptions'">Subscriptions</button>
+        <button class="nav-button" onclick="window.location.href='/add_payment'">Add Payment Method</button>
+        <button class="nav-button" id="add-subscription" onclick="window.location.href='/add_subscription'">Add Subscription</button>
+        <button class="nav-button" id="inquiry" onclick="window.location.href='/inquiry'">Create Inquiry</button>
+        <div class="settings">
+            <span class="material-icons">Settings</span>
+        </div>
+    </div>
+
+    
+    <div class="main-content">
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        <header>
+            <h1>Payment Methods:</h1>
+        </header>
+        <div class="content">
+            <ul class="payment-list">
+                {% for name, payment_method, expiry_date, balance, currency, account_id in payment_methods %}
+                <li>
+                    <img src="{{ url_for('static', filename='images/visa.png') }}" alt="Visa Card" class="payment-icon">
+                    <div class="payment-details">
+                        <div><span class="label">Name on card:</span> <span class="value">{{ name }}</span></div>
+                        <div><span class="label">Card number:</span> <span class="value">{{ payment_method }}</span></div>
+                        <div><span class="label">Expiry date:</span> <span class="value">{{ expiry_date }}</span></div>
+                        <div><span class="label">Balance:</span> <span class="value">{{ balance }}</span></div>
+                        <div><span class="label">Currency:</span> <span class="value">{{ currency }}</span></div>
+                    </div>
+                    <form action="{{ url_for('delete_payment_method', account_id=account_id) }}" method="post">
+                        <button type="submit" class="remove-btn">Remove Payment Method</button>
+                    </form>
+                </li>
+                {% else %}
+                <li>No payment methods found.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+    </div>
+</body>
+</html>
+
+

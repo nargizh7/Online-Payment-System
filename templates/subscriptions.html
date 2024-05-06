@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Subscriptions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #E8ECEE;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow-x: hidden; /* Prevents horizontal scrolling */
+        }
+
+        .top-menu {
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            font-size: 16px;
+            width: 98%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .logout {
+            margin-right: 10px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .sidebar {
+            padding: 20px;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background-color: transparent;
+            position: fixed;
+            top: 60px;
+            bottom: 0;
+            overflow-y: auto;
+        }
+
+        .nav-button, .settings {
+            background: none;
+            border: none;
+            color: #333;
+            padding: 10px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-button {
+            margin: 5px;
+        }
+        .nav-button:hover, .settings:hover {
+            background-color: #298D37;
+            color: white;
+        }
+
+        #subscriptions {
+            background-color: #298D37; /* Green background */
+            color: white; /* White text */
+        }
+
+        #subscriptions:hover {
+            background-color: #3CA64E;
+        }
+
+        .settings {
+            margin-top: auto;
+            font-size: 16px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px 20px 20px 260px; /* Adjusted left padding to account for sidebar */
+            margin-top: 60px; /* Below the top menu */
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - 340px); /* Adjusted width */
+            
+        }
+
+        table {
+            background-color: #ffffff;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #298D37;
+            color: #fff;
+        }
+        .user {
+            text-decoration: underline;
+            cursor: pointer;
+        
+        }
+
+        .active-true {
+            color: green;
+        }
+
+        .active-false {
+            color: red;
+        }
+
+        button {
+            padding: 5px 10px;
+            background-color: #298D37;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #3CA64E;
+        }
+
+        form {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-menu">
+        <div class="user">charles.leclerc@gmail.com</div>
+        <div class="logout" onclick="window.location.href='/logout'">Log out</div>
+    </div>
+    <div class="sidebar">
+        <button class="nav-button" id="transaction-history" onclick="window.location.href='/transaction_history'">Transaction History</button>
+        <button class="nav-button" id="make-payment" onclick="window.location.href='/make_payment'">Make Payment</button>
+        <button class="nav-button" id = "view" onclick="window.location.href='/view_accounts'">View Accounts</button>
+        <button class="nav-button" id="subscriptions" onclick="window.location.href='/subscriptions'">Subscriptions</button>
+        <button class="nav-button" onclick="window.location.href='/add_payment'">Add Payment Method</button>
+        <button class="nav-button" id="add-subscription" onclick="window.location.href='/add_subscription'">Add Subscription</button>
+        <button class="nav-button" id="inquiry" onclick="window.location.href='/inquiry'">Create Inquiry</button>
+<div class="settings">
+            <span class="material-icons">Settings</span>
+        </div>
+    </div>
+    <div class="main-content">
+        <header>
+            <h1>Subscriptions</h1>
+        </header>
+        <div class="content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subscription ID</th>
+                        <th>Service</th>
+                        <th>Payment Frequency</th>
+                        <th>Renews on</th>
+                        <th>Active</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if subscriptions %}
+                        {% for subscription in subscriptions %}
+                        <tr>
+                            <td>{{ subscription[0] }}</td>
+                            <td>{{ subscription[1] }}</td>
+                            <td>{{ subscription[2] }}</td>
+                            <td>{{ subscription[4] }}</td> <!-- Display renews_at value -->
+                            <td class="{{ 'active-true' if subscription[3] else 'active-false' }}">
+                                {{ 'Active' if subscription[3] else 'Inactive' }}
+                            </td>
+                            <td>
+                                {% if subscription[3] %}
+                                    <form action="{{ url_for('cancel_subscription', subscription_id=subscription[0]) }}" method="post">
+                                        <button type="submit">Cancel</button>
+                                    </form>
+                                {% else %}
+                                    <form action="{{ url_for('activate_subscription', subscription_id=subscription[0]) }}" method="post">
+                                        <button type="submit">Activate</button>
+                                    </form>
+                                {% endif %}
+                                <!-- Add delete button form -->
+                                <form action="{{ url_for('delete_subscription', subscription_id=subscription[0]) }}" method="post">
+                                    <button type="submit" class="delete-button">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6">No subscriptions found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+                
+            </table>
+        </div>
+    </div>
+</body>
+</html>
